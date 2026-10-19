@@ -1,4 +1,8 @@
 [app]
+android.api = 33
+android.minapi = 21
+android.sdk_accept_license = True
+
 title = Tarot App
 package.name = tarotapp
 package.domain = org.tarot
