@@ -1,8 +1,4 @@
 [app]
-android.api = 33
-android.minapi = 21
-android.sdk_accept_license = True
-
 title = Tarot App
 package.name = tarotapp
 package.domain = org.tarot
@@ -16,6 +12,7 @@ android.permissions = INTERNET
 android.api = 33
 android.minapi = 21
 android.ndk = 25b
+android.sdk_accept_license = True
 android.private_storage = True
 orientation = portrait
 android.archs = arm64-v8a
