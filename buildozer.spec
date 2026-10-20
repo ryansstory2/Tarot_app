@@ -1,40 +1,41 @@
-[app]
+name: CI
 
-# (str) Title of your application
-title = Tarot App
-# (str) Version of your application
-version = 0.1
+on:
+  push:
+    branches: [ main, master ]
 
-# (str) Package name
-package.name = tarotapp
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
 
-# (str) Package domain (needed for android packaging)
-package.domain = org.tarot
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-# (list) Source files to include (let it pick up everything standard)
-source.include_exts = py,png,jpg,kv,atlas
+      - name: Cache Buildozer global directory
+        uses: actions/cache@v4
+        with:
+          path: |
+            .buildozer
+            bin/
+          key: buildozer-${{ hashFiles('buildozer.spec') }}
+          restore-keys: |
+            buildozer-
 
-# (list) Source directory where the application lives
-source.dir = .
+      - name: Build APK with Official Buildozer Docker Image
+        run: |
+          echo "y" | docker run --rm -it \
+            -v ${{ github.workspace }}:/home/user/hostcwd \
+            -e BUILDOZER_ALLOW_ROOT=1 \
+            kivy/buildozer:latest \
+            android debug
 
-# (list) Application requirements
-requirements = python3,kivy
-
-# (list) Supported orientations
-orientation = portrait
-
-#
-# Android specific
-#
-
-# (int) Target Android API, should be as high as possible.
-android.api = 33
-
-# (int) Minimum API your APK will support.
-android.minapi = 21
-
-# (str) Android NDK version to use
-android.ndk = 25b
-
-# (bool) Enable Android auto backup
-android.enable_androidx = True
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: kivy-android-apk
+          path: bin/*.apk
+          retention-days: 7
