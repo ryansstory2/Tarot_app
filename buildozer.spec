@@ -12,8 +12,13 @@ package.domain = org.tarot
 # (list) Source files to include (let it include python files)
 source.include_exts = py,png,jpg,kv,atlas
 
+# (str) Source directory where the application files are located
+source.dir = .
+
+# (str) Application versioning
+version = 1.0
+
 # (list) Application requirements
-# Add pillow here so Kivy can handle images and assets smoothly without failing
 requirements = python3,kivy,pillow
 
 # (str) Supported orientations
