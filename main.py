@@ -5,6 +5,12 @@ from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.graphics import Color, RoundedRectangle, Line, Ellipse
 import random
+      - name: Upload Build Logs on Failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs
+          path: ~/.buildozer/android/platform/python-for-android/buildozer.log # or check where buildozer outputs logs
 
 class SurrealCardWidget(FloatLayout):
     def __init__(self, card_data, **kwargs):
