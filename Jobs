@@ -1,0 +1,22 @@
+jobs:
+  build:
+      runs-on: ubuntu-latest
+      steps:
+        # 1. First, check out your repository code
+        - name: Checkout Code
+          uses: actions/checkout@v4
+
+        # 2. PUT IT HERE: Maximize disk space and add a 4GB swap file
+        - name: Maximize build disk space
+          uses: AdityaGarg8/maximize-build-space@v5
+          with:
+            remove-dotnet: 'true'
+            remove-android: 'false'
+            remove-haskell: 'true'
+            remove-codeql: 'true'
+            reserve-swap: '4096'
+
+        # 3. Then, run your normal Buildozer step after it
+        - name: Build APK with Official Buildozer
+          uses: ArtemSBulgakov/buildozer-action@v1
+          # ... rest of your configuration
