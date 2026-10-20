@@ -9,32 +9,30 @@ package.name = tarotapp
 # (str) Package domain (needed for android packaging)
 package.domain = org.tarot
 
-# (list) Source files to include
+# (list) Source files to include (let it pick up everything standard)
 source.include_exts = py,png,jpg,kv,atlas
 
-# (str) Source directory where the application files are located
+# (list) Source directory where the application lives
 source.dir = .
 
-# (str) Application versioning
-version = 1.0
-
 # (list) Application requirements
-requirements = python3,kivy,pillow
+requirements = python3,kivy
 
-# (str) Supported orientations
+# (list) Supported orientations
 orientation = portrait
 
-# (list) Permissions
-android.permissions = INTERNET
+#
+# Android specific
+#
 
-# (int) Target Android API
+# (int) Target Android API, should be as high as possible.
 android.api = 33
 
-# (int) Minimum API your APK will support
+# (int) Minimum API your APK will support.
 android.minapi = 21
 
-# (str) Target architecture
-android.arch = armeabi-v7a
+# (str) Android NDK version to use
+android.ndk = 25b
 
-# (str) Android entry point
-android.entrypoint = main.py
+# (bool) Enable Android auto backup
+android.enable_androidx = True
