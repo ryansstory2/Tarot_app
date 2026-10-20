@@ -9,7 +9,7 @@ package.name = tarotapp
 # (str) Package domain (needed for android packaging)
 package.domain = org.tarot
 
-# (list) Source files to include (let it include python files)
+# (list) Source files to include
 source.include_exts = py,png,jpg,kv,atlas
 
 # (str) Source directory where the application files are located
@@ -27,11 +27,14 @@ orientation = portrait
 # (list) Permissions
 android.permissions = INTERNET
 
-# (int) Target Android API, should be as high as possible.
-android.api = 31
+# (int) Target Android API
+android.api = 33
 
-# (int) Minimum API your APK will support.
-android.minAPI = 21
+# (int) Minimum API your APK will support
+android.minapi = 21
+
+# (str) Target architecture
+android.arch = armeabi-v7a
 
 # (str) Android entry point
 android.entrypoint = main.py
