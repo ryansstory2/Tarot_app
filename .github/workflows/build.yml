@@ -6,21 +6,21 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
 
     steps:
-      - name: Checkout Code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build with Buildozer Docker
-        uses: ArtemSBulgakov/buildozer-action@v1
+      - name: Build with Official Buildozer Action
+        uses: kivy/buildozer-action@master
         id: buildozer
         with:
-          command: buildozer -v android debug
-          buildozer_version: stable
+          filename: buildozer.spec
+          command: android debug
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
