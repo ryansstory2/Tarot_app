@@ -6,81 +6,25 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
 
     steps:
-      - name: Checkout
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Build with Buildozer Docker
+        uses: ArtemSBulgakov/buildozer-action@v1
+        id: buildozer
         with:
-          python-version: '3.10'
-
-      - name: Setup Java JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '11'
-
-      - name: Cache Buildozer Global Directory
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.buildozer
-            .buildozer
-          key: ${{ runner.os }}-buildozer-${{ hashFiles('buildozer.spec') }}-${{ hashFiles('main.py') }}
-          restore-keys: |
-            ${{ runner.os }}-buildozer-
-
-      - name: Install System Dependencies
-        run: |
-          sudo dpkg --add-architecture i386
-          sudo apt-get update
-          sudo apt-get remove -y libunwind-14 libunwind-dev || true
-          sudo apt-get install -y \
-            build-essential \
-            git \
-            ffmpeg \
-            libsdl2-dev \
-            libsdl2-image-dev \
-            libsdl2-mixer-dev \
-            libsdl2-ttf-dev \
-            libportmidi-dev \
-            libswscale-dev \
-            libavformat-dev \
-            libavcodec-dev \
-            zlib1g-dev \
-            libgstreamer1.0-dev \
-            gstreamer1.0-plugins-base \
-            gstreamer1.0-plugins-good \
-            unzip \
-            ant \
-            autoconf \
-            libtool \
-            pkg-config \
-            zlib1g:i386 \
-            libstdc++6:i386 \
-            libz1:i386
-
-      - name: Install Python Packaging Tools & Cython
-        run: |
-          python3 -m pip install --upgrade pip setuptools wheel
-          python3 -m pip install Cython==0.29.36
-          python3 -m pip install --upgrade buildozer
-
-      - name: Build Android Package
-        run: |
-          yes | buildozer -v android debug || (echo "=== BUILD FAILED, DUMPING ERROR LOG ===" && cat .buildozer/android/platform/build-*.log 2>/dev/null || true) && exit 1
-        env:
-          PYTHON: python3
+          command: buildozer -v android debug
+          buildozer_version: stable
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: kivy-android-apk
-          path: bin/*.apk
+          path: ${{ steps.buildozer.outputs.filename }}
           retention-days: 7
