@@ -1,28 +1,44 @@
-[app]
+name: CI
 
-# (str) Title of your application
-title = My Kivy App
+on:
+  push:
+    branches: [ main, master ]
 
-# (str) Package name
-package.name = myapp
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
 
-# (str) Package domain (needed for android packaging)
-package.domain = org.test
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-# (str) Source directory where the main.py file lives
-source.dir = .
+      - name: Maximize build disk space
+        uses: AdityaGarg8/maximize-build-space@v5
+        with:
+          remove-dotnet: 'true'
+          remove-android: 'false'
+          remove-haskell: 'true'
+          remove-codeql: 'true'
+          reserve-swap: '4096'
 
-# (list) Source files to include (let it default or specify your python files)
-source.include_exts = py,png,jpg,kv,atlas
+      - name: Cache Buildozer global directory
+        uses: actions/cache@v3
+        with:
+          path: ~/.buildozer
+          key: ${{ runner.os }}-buildozer-${{ hashFiles('buildozer.spec') }}
+          restore-keys: |
+            ${{ runner.os }}-buildozer-
 
-# (str) Application versioning
-version = 0.1
+      - name: Build APK with Official Buildozer Docker Image
+        uses: ArtemSBulgakov/buildozer-action@v1
+        with:
+          command: buildozer -v android debug
 
-# (list) Application requirements
-requirements = python3,kivy
-
-# (str) Supported orientations
-orientation = portrait
-
-[buildozer]
-log_level = 2
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: package
+          path: bin/*.apk
