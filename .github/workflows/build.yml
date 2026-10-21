@@ -10,10 +10,12 @@ jobs:
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
+    - name: Build APK with Official Buildozer Docker Image
+      uses: ArtemSBulgakov/buildozer-action@v1
+      with:
+        command: buildozer -v android debug
 
     steps:
-    
-
       - name:     - name: Maximize build disk space
       uses: AdityaGarg8/maximize-build-space@v5
       with:
