@@ -1,7 +1,7 @@
 [app]
 
-title = My App
-package.name = myapp
+title = Tarot App
+package.name = tarotapp
 package.domain = org.test
 source.dir = .
 source.exts = py,png,jpg,kv,atlas
