@@ -19,7 +19,6 @@ source.exts = py,png,jpg,kv,atlas
 version = 0.1
 
 # (list) Application requirements
-# comma separated e.g. requirements = sqlite3,kivy
 requirements = python3,kivy
 
 # (str) Supported orientations
@@ -27,6 +26,21 @@ orientation = portrait
 
 # (bool) Indicate if the application should be fullscreen or not
 fullscreen = 0
+
+# (list) Permissions
+android.permissions = INTERNET
+
+# (int) Target Android API, should be as high as possible.
+android.api = 33
+
+# (int) Minimum API your APK will support.
+android.min_api = 21
+
+# (bool) Skip / Don't compress certain file types
+#android.add_assets =
+
+# (bool) Enable Android SDK accept license
+android.accept_sdk_license = True
 
 [buildozer]
 # (int) Log level (0 = error only, 1 = info, 2 = debug (with command output))
