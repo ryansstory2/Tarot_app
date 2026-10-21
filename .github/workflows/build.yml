@@ -12,11 +12,17 @@ jobs:
       cancel-in-progress: true
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+    
 
-      - name: Cache Buildozer global directory
-        uses: actions/cache@v4
+      - name:     - name: Maximize build disk space
+      uses: AdityaGarg8/maximize-build-space@v5
+      with:
+        remove-dotnet: 'true'
+        remove-android: 'false'
+        remove-haskell: 'true'
+        remove-codeql: 'true'
+        reserve-swap: '4096'
+
         with:
           path: |
             .buildozer
