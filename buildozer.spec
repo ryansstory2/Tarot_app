@@ -24,6 +24,30 @@ jobs:
           remove-codeql: 'true'
           reserve-swap: '4096'
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            git zip unzip autoconf libtool pkg-config \
+            zlib1g-dev libncurses5-dev libncursesw5-dev libsdl2-dev \
+            openjdk-17-jdk
+
+      - name: Install Buildozer and Cython
+        run: |
+          pip install --upgrade pip
+          pip install --upgrade cython buildozer
+
+      - name: Initialize Buildozer Spec if Missing
+        run: |
+          if [ ! -f buildozer.spec ]; then
+            buildozer init
+          fi
+
       - name: Cache Buildozer global directory
         uses: actions/cache@v3
         with:
@@ -32,10 +56,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildozer-
 
-      - name: Build APK with Official Buildozer Docker Image
-        uses: ArtemSBulgakov/buildozer-action@v1
-        with:
-          command: buildozer -v android debug
+      - name: Build APK with Buildozer
+        run: buildozer -v android debug
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
