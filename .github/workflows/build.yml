@@ -1,8 +1,10 @@
-name: CI
+name: Build Android APK
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build:
@@ -11,20 +13,14 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - - name: Build with Official Buildozer Docker
-  run: |
-    docker run --rm \
-      --volume ${{ github.workspace }}:/home/user/hostcwd \
-      kivy/buildozer android debug
-
-          buildozer_version: stable
+      - name: Build with Official Buildozer Docker
+        run: |
+          docker run --rm \
+            --volume ${{ github.workspace }}:/home/user/hostcwd \
+            kivy/buildozer android debug
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: package
-          path: |
-            bin/*.apk
-            **/*.apk
-          if-no-files-found: error
-          
+          path: bin/*.apk
