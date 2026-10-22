@@ -19,7 +19,9 @@ jobs:
           chmod -R 777 $GITHUB_WORKSPACE
 
       - name: Build APK
-        run: buildozer -v android debug
+        run: |
+          export BUILDOZER_ALLOW_ROOT=1
+          buildozer -v android debug
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
