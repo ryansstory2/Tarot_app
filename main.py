@@ -1,3 +1,8 @@
+from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.image import Image
+from kivy.uix.label import Label
+from kivy.graphics import Color, RoundedRectangle
+import random
 from kivy.uix.image import Image
 from kivy.uix.label import Label
 from kivy.graphics import Color, RoundedRectangle
