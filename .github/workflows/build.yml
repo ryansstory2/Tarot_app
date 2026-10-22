@@ -14,10 +14,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Fix directory permissions
+      - name: Grant permissions
         run: |
-          chown -R user:user $GITHUB_WORKSPACE
-          chmod -R 777 /home/user
+          chmod -R 777 $GITHUB_WORKSPACE
 
       - name: Build APK
         run: buildozer -v android debug
