@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarot App</title>
+    <style>
+        body {
+            background-color: #0b2e13;
+            color: #f8f9fa;
+            font-family: 'Georgia', serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #d4af37;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            font-style: italic;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+        .controls {
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #d4af37;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #f39c12;
+        }
+        .spread-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .card {
+            width: 120px;
+            height: 200px;
+            background-color: #111;
+            border: 3px solid #d4af37;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            box-sizing: border-box;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: scale(1.05);
+        }
+        .card-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #d4af37;
+        }
+        .reading-box {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid #d4af37;
+            padding: 20px;
+            margin-top: 30px;
+            border-radius: 8px;
+            text-align: left;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Tarot Reader</h1>
+    <div class="subtitle">Surrealist & Traditional Insights</div>
+
+    <div class="controls">
+        <button onclick="drawSpread(1)">1-Card Draw</button>
+        <button onclick="drawSpread(3)">3-Card Spread</button>
+        <button onclick="drawSpread(5)">5-Card Spread</button>
+    </div>
+
+    <div id="spread" class="spread-container"></div>
+    <div id="reading" class="reading-box" style="display:none;"></div>
+
+    <script>
+        const tarotDeck = [
+            { name: "The Fool", meaning: "New beginnings, innocence, spontaneity, a leap of faith." },
+            { name: "The Magician", meaning: "Manifestation, resourcefulness, power, inspired action." },
+            { name: "The High Priestess", meaning: "Intuition, sacred knowledge, divine feminine, the subconscious." },
+            { name: "The Empress", meaning: "Femininity, beauty, nature, nurturing, abundance." },
+            { name: "The Emperor", meaning: "Authority, establishment, structure, a solid foundation." },
+            { name: "The Lovers", meaning: "Love, harmony, vital relationships, values alignment." },
+            { name: "The Chariot", meaning: "Control, willpower, success, action, determination." },
+            { name: "Strength", meaning: "Courage, persuasion, influence, compassion, inner power." },
+            { name: "The Hermit", meaning: "Soul-searching, introspection, being alone, inner guidance." },
+            { name: "Wheel of Fortune", meaning: "Good luck, karma, life cycles, destiny, a turning point." },
+            { name: "Justice", meaning: "Fairness, truth, cause and effect, law, clarity." },
+            { name: "Death", meaning: "Endings, change, transformation, transition, letting go." },
+            { name: "The Devil", meaning: "Shadow self, attachment, addiction, restriction, bondage." },
+            { name: "The Tower", meaning: "Sudden disruption, upheaval, chaos, revelation, awakening." },
+            { name: "The Star", meaning: "Hope, faith, purpose, renewal, spirituality, healing." },
+            { name: "The Moon", meaning: "Illusion, fear, anxiety, subconscious, intuition, dreams." },
+            { name: "The Sun", meaning: "Positivity, fun, warmth, success, vitality, joy, clarity." },
+            { name: "Judgement", meaning: "Rebirth, inner calling, absolution, awakening, reckoning." },
+            { name: "The World", meaning: "Completion, accomplishment, travel, fulfillment, wholeness." }
+        ];
+
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex != 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        function drawSpread(numCards) {
+            const deckCopy = shuffle([...tarotDeck]);
+            const selectedCards = deckCopy.slice(0, numCards);
+            
+            const spreadDiv = document.getElementById('spread');
+            const readingDiv = document.getElementById('reading');
+            
+            spreadDiv.innerHTML = '';
+            let readingHtml = '<h3>Reading Interpretation:</h3><ul>';
+
+            selectedCards.forEach((card, index) => {
+                spreadDiv.innerHTML += `
+                    <div class="card">
+                        <div class="card-title">Card ${index + 1}</div>
+                        <div style="margin-top:auto; margin-bottom:auto; font-weight:bold;">${card.name}</div>
+                    </div>
+                `;
+                readingHtml += `<li><b>${card.name}:</b> ${card.meaning}</li>`;
+            });
+
+            readingHtml += '</ul>';
+            readingDiv.innerHTML = readingHtml;
+            readingDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
