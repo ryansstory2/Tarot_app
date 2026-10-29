@@ -2,157 +2,669 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tarot App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Surreal Mystic Tarot — Salvador Dalí Edition</title>
+    
+    <!-- PWA / Mobile Native Capabilities -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#080511">
+
     <style>
-        body {
-            background-color: #0b2e13;
-            color: #f8f9fa;
-            font-family: 'Georgia', serif;
-            text-align: center;
+        :root {
+            --bg-color: #080511;
+            --card-bg: #140d24;
+            --accent-gold: #f3e5ab;
+            --accent-gold-glow: rgba(243, 229, 171, 0.45);
+            --border-purple: #4a3b75;
+            --text-purple: #d1c7f3;
+            --sub-purple: #b1a7d8;
+            --card-width: 260px;
+            --card-height: 420px;
+        }
+
+        * {
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            box-sizing: border-box;
             margin: 0;
-            padding: 20px;
+            padding: 0;
         }
-        h1 {
-            color: #d4af37;
-            margin-bottom: 5px;
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-purple);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+            text-align: center;
+            padding: 16px 12px 60px 12px;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 50% 10%, rgba(120, 80, 200, 0.22), transparent 60%),
+                radial-gradient(circle at 80% 80%, rgba(243, 229, 171, 0.05), transparent 50%);
         }
-        .subtitle {
+
+        header {
+            margin-bottom: 20px;
+        }
+
+        h1 { 
+            color: var(--accent-gold); 
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-shadow: 0 0 16px var(--accent-gold-glow);
+        }
+
+        p.subtitle { 
+            color: var(--sub-purple); 
+            font-size: 0.85rem; 
+            margin-top: 4px;
             font-style: italic;
-            color: #ccc;
-            margin-bottom: 20px;
+            letter-spacing: 0.5px;
         }
+
         .controls {
-            margin-bottom: 20px;
-        }
-        button {
-            background-color: #d4af37;
-            color: #000;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 5px;
-            margin: 5px;
-        }
-        button:hover {
-            background-color: #f39c12;
-        }
-        .spread-container {
             display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-top: 20px;
-        }
-        .card {
-            width: 120px;
-            height: 200px;
-            background-color: #111;
-            border: 3px solid #d4af37;
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 10px;
-            box-sizing: border-box;
+            gap: 12px;
+            max-width: 480px;
+            margin: 0 auto 16px auto;
+            flex-wrap: wrap;
+        }
+
+        select {
+            background-color: var(--card-bg);
+            color: var(--accent-gold);
+            border: 1px solid var(--border-purple);
+            padding: 10px 16px;
+            font-size: 0.95rem;
+            border-radius: 12px;
+            outline: none;
             cursor: pointer;
-            transition: transform 0.3s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            transition: border-color 0.3s;
         }
-        .card:hover {
-            transform: scale(1.05);
+
+        select:focus {
+            border-color: var(--accent-gold);
         }
-        .card-title {
-            font-size: 14px;
+
+        .btn-action {
+            background: linear-gradient(135deg, #2b1a47, #170d2c);
+            color: var(--accent-gold);
+            border: 1px solid var(--border-purple);
+            padding: 10px 18px;
+            font-size: 0.9rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn-action:hover {
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 10px var(--accent-gold-glow);
+        }
+
+        .instruction {
+            font-size: 0.9rem;
+            color: var(--accent-gold);
+            margin-bottom: 16px;
+            min-height: 22px;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+        }
+
+        /* Interactive Deck Area */
+        .deck-area {
+            position: relative;
+            width: 140px;
+            height: 220px;
+            margin: 10px auto 30px auto;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .deck-stack-card {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 14px;
+            border: 1px solid var(--accent-gold);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.8);
+            background: radial-gradient(circle, #25133d 0%, #0d061c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+        }
+
+        .deck-stack-card:nth-child(1) { transform: translateZ(0px); }
+        .deck-stack-card:nth-child(2) { transform: translate(-3px, -3px) translateZ(-4px); }
+        .deck-stack-card:nth-child(3) { transform: translate(-6px, -6px) translateZ(-8px); }
+
+        .deck-area:hover .deck-stack-card:nth-child(1) {
+            transform: translateY(-4px);
+        }
+
+        /* Shuffle Keyframes */
+        .shuffling .deck-stack-card:nth-child(1) { animation: shuffleL 0.5s ease-in-out infinite alternate; }
+        .shuffling .deck-stack-card:nth-child(2) { animation: shuffleR 0.5s ease-in-out infinite alternate 0.1s; }
+        .shuffling .deck-stack-card:nth-child(3) { animation: shuffleC 0.5s ease-in-out infinite alternate 0.2s; }
+
+        @keyframes shuffleL {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(-55px, -10px) rotate(-14deg); }
+        }
+        @keyframes shuffleR {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(55px, -10px) rotate(14deg); }
+        }
+        @keyframes shuffleC {
+            0% { transform: scale(1); }
+            100% { transform: translateY(-16px) scale(1.05); }
+        }
+
+        /* Responsive Grid for Spreads */
+        .spread-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 24px;
+            max-width: 1300px;
+            margin: 0 auto;
+            perspective: 1200px;
+        }
+
+        .card-wrapper {
+            position: relative;
+            width: var(--card-width);
+            height: var(--card-height);
+            opacity: 0;
+            transform: translateY(40px) scale(0.92);
+            transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        }
+
+        .card-wrapper.drift-in {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .card-3d {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.75s cubic-bezier(0.4, 0.0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .card-wrapper.flipped .card-3d {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            border-radius: 16px;
+            border: 1px solid var(--border-purple);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.75);
+        }
+
+        /* Card Back */
+        .card-back-face {
+            background: radial-gradient(circle at center, #231238 0%, #0a0416 100%);
+            border: 1.5px solid rgba(243, 229, 171, 0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .card-back-pattern {
+            width: 80%;
+            height: 80%;
+            border: 1px dashed rgba(243, 229, 171, 0.3);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .card-back-badge {
+            position: absolute;
+            bottom: 16px;
+            background: rgba(8, 5, 17, 0.85);
+            border: 1px solid var(--accent-gold);
+            color: var(--accent-gold);
+            font-size: 0.72rem;
+            padding: 5px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+        }
+
+        /* Card Front */
+        .card-front-face {
+            background-color: var(--card-bg);
+            transform: rotateY(180deg);
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            text-align: center;
+            border: 1px solid rgba(243, 229, 171, 0.5);
+        }
+
+        .card-front-face.reversed-img .card-img-box img, 
+        .card-front-face.reversed-img .card-img-box svg {
+            transform: rotate(180deg);
+        }
+
+        .card-pos-label {
+            font-size: 0.72rem;
+            color: var(--sub-purple);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
             font-weight: bold;
-            color: #d4af37;
         }
-        .reading-box {
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid #d4af37;
-            padding: 20px;
-            margin-top: 30px;
-            border-radius: 8px;
+
+        .card-title {
+            color: var(--accent-gold);
+            font-size: 1.15rem;
+            margin: 2px 0;
+            font-weight: 700;
+        }
+
+        .card-orient {
+            font-size: 0.78rem;
+            color: #ffb74d;
+            margin-bottom: 6px;
+        }
+
+        .card-img-box {
+            width: 100%;
+            height: 210px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(243, 229, 171, 0.25);
+            background: #06020c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-img-box img, .card-img-box svg {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .card-text-snippet {
+            font-size: 0.8rem;
+            line-height: 1.35;
+            color: var(--text-purple);
             text-align: left;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
+            border-top: 1px solid rgba(74, 59, 117, 0.4);
+            padding-top: 6px;
+            margin-top: 6px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .tap-hint {
+            font-size: 0.68rem;
+            color: var(--sub-purple);
+            opacity: 0.75;
+            margin-top: 4px;
+            text-align: right;
+            font-style: italic;
+        }
+
+        /* Modal Drawer */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(5, 3, 10, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 200;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-drawer {
+            width: 100%;
+            max-width: 580px;
+            max-height: 80vh;
+            background: var(--card-bg);
+            border-top: 2px solid var(--accent-gold);
+            border-radius: 20px 20px 0 0;
+            padding: 24px 20px 36px 20px;
+            overflow-y: auto;
+            text-align: left;
+            transform: translateY(100%);
+            transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .modal-overlay.active .modal-drawer {
+            transform: translateY(0);
+        }
+
+        .modal-close-btn {
+            background: var(--border-purple);
+            color: var(--accent-gold);
+            border: none;
+            padding: 8px 14px;
+            border-radius: 10px;
+            float: right;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .modal-title {
+            color: var(--accent-gold);
+            font-size: 1.4rem;
+            margin-bottom: 2px;
+        }
+
+        .modal-subtitle {
+            color: #ffb74d;
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+        }
+
+        .modal-body p {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: var(--text-purple);
+            margin-bottom: 14px;
         }
     </style>
 </head>
 <body>
 
-    <h1>Tarot Reader</h1>
-    <div class="subtitle">Surrealist & Traditional Insights</div>
+    <header>
+        <h1>👁️ Surreal Mystic Tarot</h1>
+        <p class="subtitle">Salvador Dalí Interactive Edition</p>
+    </header>
 
     <div class="controls">
-        <button onclick="drawSpread(1)">1-Card Draw</button>
-        <button onclick="drawSpread(3)">3-Card Spread</button>
-        <button onclick="drawSpread(5)">5-Card Spread</button>
+        <select id="spreadType" onchange="onSpreadChange()">
+            <option value="3card">3-Card Spread (Past / Present / Future)</option>
+            <option value="daily">Daily Single Card Oracle</option>
+            <option value="5card">5-Card Insight Spread</option>
+            <option value="lovers">Lovers / Relationship Spread</option>
+            <option value="career">Career / Path Spread</option>
+        </select>
+        <button class="btn-action" onclick="flipAllCards()">Reveal All</button>
     </div>
 
-    <div id="spread" class="spread-container"></div>
-    <div id="reading" class="reading-box" style="display:none;"></div>
+    <div id="instructionText" class="instruction">Tap the deck to shuffle & deal cards</div>
+
+    <!-- Interactive Deck -->
+    <div id="deckArea" class="deck-area" onclick="handleDeckClick()">
+        <div class="deck-stack-card">
+            <div class="card-back-pattern">
+                <span style="font-size: 2.2rem; opacity: 0.75;">👁️</span>
+                <span style="font-size: 0.75rem; letter-spacing: 2px; color: var(--accent-gold);">TAROT</span>
+            </div>
+        </div>
+        <div class="deck-stack-card"></div>
+        <div class="deck-stack-card"></div>
+    </div>
+
+    <!-- Active Reading Spread -->
+    <div id="spreadContainer" class="spread-container"></div>
+
+    <!-- Deep Reading Modal Drawer -->
+    <div id="modalOverlay" class="modal-overlay" onclick="closeModal()">
+        <div class="modal-drawer" onclick="event.stopPropagation()">
+            <button class="modal-close-btn" onclick="closeModal()">Close ✕</button>
+            <div id="modalContent"></div>
+        </div>
+    </div>
 
     <script>
-        const tarotDeck = [
-            { name: "The Fool", meaning: "New beginnings, innocence, spontaneity, a leap of faith." },
-            { name: "The Magician", meaning: "Manifestation, resourcefulness, power, inspired action." },
-            { name: "The High Priestess", meaning: "Intuition, sacred knowledge, divine feminine, the subconscious." },
-            { name: "The Empress", meaning: "Femininity, beauty, nature, nurturing, abundance." },
-            { name: "The Emperor", meaning: "Authority, establishment, structure, a solid foundation." },
-            { name: "The Lovers", meaning: "Love, harmony, vital relationships, values alignment." },
-            { name: "The Chariot", meaning: "Control, willpower, success, action, determination." },
-            { name: "Strength", meaning: "Courage, persuasion, influence, compassion, inner power." },
-            { name: "The Hermit", meaning: "Soul-searching, introspection, being alone, inner guidance." },
-            { name: "Wheel of Fortune", meaning: "Good luck, karma, life cycles, destiny, a turning point." },
-            { name: "Justice", meaning: "Fairness, truth, cause and effect, law, clarity." },
-            { name: "Death", meaning: "Endings, change, transformation, transition, letting go." },
-            { name: "The Devil", meaning: "Shadow self, attachment, addiction, restriction, bondage." },
-            { name: "The Tower", meaning: "Sudden disruption, upheaval, chaos, revelation, awakening." },
-            { name: "The Star", meaning: "Hope, faith, purpose, renewal, spirituality, healing." },
-            { name: "The Moon", meaning: "Illusion, fear, anxiety, subconscious, intuition, dreams." },
-            { name: "The Sun", meaning: "Positivity, fun, warmth, success, vitality, joy, clarity." },
-            { name: "Judgement", meaning: "Rebirth, inner calling, absolution, awakening, reckoning." },
-            { name: "The World", meaning: "Completion, accomplishment, travel, fulfillment, wholeness." }
+        function makeCardSvg(title, symbol, primaryColor = '#f3e5ab') {
+            return `<svg viewBox="0 0 320 480" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="skyGrad-${title.replace(/[^a-zA-Z]/g,'')}" x1="0" y1="0" x2="0" y2="100%">
+                        <stop offset="0%" stop-color="#140b2b"/>
+                        <stop offset="100%" stop-color="#3d1d52"/>
+                    </linearGradient>
+                </defs>
+                <rect width="320" height="480" fill="url(#skyGrad-${title.replace(/[^a-zA-Z]/g,'')})"/>
+                <!-- Surreal Dalí Horizon & Melting Shapes -->
+                <path d="M 0 310 Q 80 280 160 310 T 320 300 L 320 480 L 0 480 Z" fill="#25122b"/>
+                <circle cx="160" cy="110" r="22" fill="${primaryColor}" opacity="0.85"/>
+                <circle cx="160" cy="110" r="44" fill="none" stroke="${primaryColor}" stroke-dasharray="4,4" opacity="0.4"/>
+                <path d="M 100 170 C 100 140, 220 140, 220 170 C 220 220, 180 240, 160 260 Z" fill="none" stroke="${primaryColor}" stroke-width="2"/>
+                <text x="160" y="295" font-size="46" text-anchor="middle" fill="${primaryColor}">${symbol}</text>
+                <rect x="20" y="415" width="280" height="42" rx="8" fill="#0d0619" stroke="${primaryColor}" stroke-width="1"/>
+                <text x="160" y="442" font-size="13" font-weight="bold" fill="${primaryColor}" text-anchor="middle" letter-spacing="1.5">${title.toUpperCase()}</text>
+            </svg>`;
+        }
+
+        const deck = [
+            { name: "0. The Fool", symbol: "🃡", file: "660.jpg", altFile: "1792803353124.jpg", upright: "New beginnings, innocence, spontaneity, boundless potential in the dreamscape.", reversed: "Holding back, recklessness, foolish risk-taking, straying off the path." },
+            { name: "I. The Magician", symbol: "🪄", file: "657.jpg", altFile: "638_2.jpg", upright: "Manifestation, willpower, resourcefulness, bending reality to your intent.", reversed: "Manipulation, poor planning, illusions, untapped or wasted talents." },
+            { name: "II. The High Priestess", symbol: "🌙", file: "659.jpg", altFile: "1792803345745.jpg", upright: "Intuition, sacred mystery, the subconscious realm, inner knowing.", reversed: "Hidden secrets, blocked intuition, superficial judgment, confusion." },
+            { name: "III. The Empress", symbol: "👑", file: "661.jpg", altFile: "1792803358973.jpg", upright: "Abundance, nurturing nature, fertile creativity, beauty, and empathy.", reversed: "Creative blocks, dependence on others, emptiness, neglected self-care." },
+            { name: "IV. The Emperor", symbol: "🏛️", file: "643.jpg", altFile: "emperor.jpg", upright: "Authority, structure, stability, leadership, establishing solid foundations.", reversed: "Tyranny, excessive control, rigidity, lack of discipline." },
+            { name: "V. The Hierophant", symbol: "🔑", file: "648.jpg", altFile: "hierophant.jpg", upright: "Spiritual wisdom, traditions, institutions, guidance, shared beliefs.", reversed: "Rebellion, breaking traditions, restriction, unorthodox methods." },
+            { name: "VI. The Lovers", symbol: "🫀", file: "649.jpg", altFile: "1792803250341.jpg", upright: "Divine union, choices aligned with core values, harmony, vulnerability.", reversed: "Disharmony, misalignment, bad choices, internal conflict." },
+            { name: "VII. The Chariot", symbol: "⚔️", file: "731.jpg", altFile: "1792831873198.jpg", upright: "Control, willpower, success, action, determination moving forward.", reversed: "Lack of control, opposition, directionless momentum, aggression." },
+            { name: "VIII. Strength", symbol: "🦁", file: "736.jpg", altFile: "1792831978816.jpg", upright: "Courage, compassion, inner patience, gentle control over raw impulses.", reversed: "Self-doubt, raw emotion, weakness, lack of confidence." },
+            { name: "IX. The Hermit", symbol: "🕯️", file: "726.jpg", altFile: "1792831793835.jpg", upright: "Soul-searching, introspection, solitude, inner guidance, awareness.", reversed: "Isolation, loneliness, withdrawal, lost on the path." },
+            { name: "X. The Wheel of Fortune", symbol: "🎡", file: "640.jpg", altFile: "1792831804194.jpg", upright: "Cycles, shifting epochs, destiny, turning points, good luck.", reversed: "Bad luck, resistance to change, breaking cycles, setbacks." },
+            { name: "XI. Justice", symbol: "⚖️", file: "650.jpg", altFile: "justice.jpg", upright: "Fairness, truth, cause and effect, law, accountability.", reversed: "Dishonesty, unfairness, lack of accountability, corruption." },
+            { name: "XII. The Hanged Man", symbol: "⏳", file: "653.jpg", altFile: "hanged_man.jpg", upright: "Surrender, letting go, new perspectives, pausing in time.", reversed: "Stagnation, useless sacrifice, resistance to change, delay." },
+            { name: "XIII. Death", symbol: "💀", file: "652.jpg", altFile: "death.jpg", upright: "Endings, transformation, transition, letting go of old attachments.", reversed: "Fear of change, holding on to decay, delayed transformation." },
+            { name: "XIV. Temperance", symbol: "🏺", file: "651.jpg", altFile: "temperance.jpg", upright: "Balance, moderation, patience, alchemy, finding inner peace.", reversed: "Imbalance, excess, lack of patience, conflicting energies." },
+            { name: "XV. The Devil", symbol: "⛓️", file: "656.jpg", altFile: "devil.jpg", upright: "Shadow self, attachment, restriction, addiction, material illusion.", reversed: "Freedom, breaking chains, overcoming addiction, reclaiming control." },
+            { name: "XVI. The Tower", symbol: "⚡", file: "654.jpg", altFile: "tower.jpg", upright: "Sudden upheaval, revelation, breakdown of false structures, awakening.", reversed: "Avoiding disaster, fear of suffering, delayed necessary breakdown." },
+            { name: "XVII. The Star", symbol: "👁️", file: "655.jpg", altFile: "star.jpg", upright: "Hope, faith, renewal, inspiration, spiritual guidance, clarity.", reversed: "Despair, lack of faith, hopelessness, disconnection, pessimism." },
+            { name: "XVIII. The Moon", symbol: "🐺", file: "658.jpg", altFile: "1792803338560.jpg", upright: "Illusion, fear, subconscious mind, intuition, navigating the dark.", reversed: "Release of fear, unveiling secrets, overcoming anxiety, clarity." },
+            { name: "XIX. The Sun", symbol: "☀️", file: "sun.jpg", altFile: "sun.jpg", upright: "Joy, success, celebration, vitality, warmth, unbridled optimism.", reversed: "Temporary depression, overly optimistic views, dimmed light." },
+            { name: "XX. Judgement", symbol: "📯", file: "judgement.jpg", altFile: "judgement.jpg", upright: "Rebirth, inner calling, absolution, reflection, awakening.", reversed: "Self-doubt, harsh self-judgment, ignoring the call." },
+            { name: "XXI. The World", symbol: "🌐", file: "644.jpg", altFile: "world.jpg", upright: "Completion, accomplishment, travel, fulfillment, a major life cycle ending.", reversed: "Lack of closure, incomplete goals, delays in success." }
         ];
 
-        function shuffle(array) {
-            let currentIndex = array.length, randomIndex;
-            while (currentIndex != 0) {
-                randomIndex = Math.floor(Math.random() * currentIndex);
-                currentIndex--;
-                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
-            }
-            return array;
+        const spreadLayouts = {
+            "daily": ["Daily Guidance"],
+            "3card": ["Past", "Present", "Future"],
+            "5card": ["Present Situation", "Hidden Influence", "Obstacle", "Advice", "Outcome"],
+            "lovers": ["Your Energy", "Partner Energy", "Dynamics", "Challenge", "Potential"],
+            "career": ["Current Path", "Upcoming Opportunity", "Obstacle", "Financial Outlook", "Long Term Goal"]
+        };
+
+        let isShuffling = false;
+        let activeSpreadData = [];
+
+        function onSpreadChange() {
+            document.getElementById("instructionText").innerText = "Spread changed. Tap the deck to deal.";
+            dealSpread();
         }
 
-        function drawSpread(numCards) {
-            const deckCopy = shuffle([...tarotDeck]);
-            const selectedCards = deckCopy.slice(0, numCards);
-            
-            const spreadDiv = document.getElementById('spread');
-            const readingDiv = document.getElementById('reading');
-            
-            spreadDiv.innerHTML = '';
-            let readingHtml = '<h3>Reading Interpretation:</h3><ul>';
+        function handleDeckClick() {
+            if (isShuffling) return;
+            isShuffling = true;
 
-            selectedCards.forEach((card, index) => {
-                spreadDiv.innerHTML += `
-                    <div class="card">
-                        <div class="card-title">Card ${index + 1}</div>
-                        <div style="margin-top:auto; margin-bottom:auto; font-weight:bold;">${card.name}</div>
+            const deckArea = document.getElementById("deckArea");
+            const instruction = document.getElementById("instructionText");
+            const container = document.getElementById("spreadContainer");
+
+            container.innerHTML = "";
+            deckArea.classList.add("shuffling");
+            instruction.innerText = "Shuffling the surreal deck...";
+
+            setTimeout(() => {
+                deckArea.classList.remove("shuffling");
+                isShuffling = false;
+                dealSpread();
+            }, 1000);
+        }
+
+        function handleImgError(imgElement, cardIndex) {
+            const item = activeSpreadData[cardIndex];
+            if (!item) return;
+
+            // Try alternate file first
+            if (!imgElement.dataset.triedAlt && item.altFile) {
+                imgElement.dataset.triedAlt = "true";
+                imgElement.src = item.altFile;
+                return;
+            }
+
+            // Fallback directly to SVG artwork
+            const box = imgElement.parentElement;
+            box.innerHTML = makeCardSvg(item.name, item.symbol);
+        }
+
+        function dealSpread() {
+            const spreadKey = document.getElementById("spreadType").value;
+            const positions = spreadLayouts[spreadKey];
+
+            // Fisher-Yates Shuffle
+            const shuffled = [...deck];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+
+            activeSpreadData = shuffled.slice(0, positions.length).map((card, idx) => ({
+                ...card,
+                positionLabel: positions[idx],
+                isReversed: Math.random() < 0.35, // 35% chance of reversal
+                isRevealed: false
+            }));
+
+            const container = document.getElementById("spreadContainer");
+            container.innerHTML = "";
+
+            activeSpreadData.forEach((item, index) => {
+                const wrapper = document.createElement("div");
+                wrapper.className = "card-wrapper";
+                wrapper.id = `card-wrap-${index}`;
+
+                const orientLabel = item.isReversed ? "Reversed 🔄" : "Upright ✨";
+                const reverseClass = item.isReversed ? "reversed-img" : "";
+                const meaningText = item.isReversed ? item.reversed : item.upright;
+
+                wrapper.innerHTML = `
+                    <div class="card-3d" onclick="toggleCardFlip(${index})">
+                        <!-- Card Back -->
+                        <div class="card-face card-back-face">
+                            <div class="card-back-pattern">
+                                <span style="font-size: 2.2rem; opacity: 0.8;">👁️</span>
+                                <span style="font-size: 0.75rem; letter-spacing: 2px; color: var(--accent-gold);">TAROT</span>
+                            </div>
+                            <div class="card-back-badge">${item.positionLabel}</div>
+                        </div>
+                        <!-- Card Front -->
+                        <div class="card-face card-front-face ${reverseClass}">
+                            <div>
+                                <div class="card-pos-label">${item.positionLabel}</div>
+                                <div class="card-title">${item.name}</div>
+                                <div class="card-orient">${orientLabel}</div>
+                            </div>
+                            <div class="card-img-box">
+                                <img src="${item.file}" alt="${item.name}" onerror="handleImgError(this, ${index})">
+                            </div>
+                            <div>
+                                <div class="card-text-snippet">${meaningText}</div>
+                                <div class="tap-hint">Tap again for deep reading ↗</div>
+                            </div>
+                        </div>
                     </div>
                 `;
-                readingHtml += `<li><b>${card.name}:</b> ${card.meaning}</li>`;
+
+                container.appendChild(wrapper);
+
+                setTimeout(() => {
+                    wrapper.classList.add("drift-in");
+                }, index * 120);
             });
 
-            readingHtml += '</ul>';
-            readingDiv.innerHTML = readingHtml;
-            readingDiv.style.display = 'block';
+            document.getElementById("instructionText").innerText = "Cards dealt. Tap each card to reveal.";
         }
+
+        function toggleCardFlip(index) {
+            const wrapper = document.getElementById(`card-wrap-${index}`);
+            const item = activeSpreadData[index];
+
+            if (!item.isRevealed) {
+                item.isRevealed = true;
+                wrapper.classList.add("flipped");
+            } else {
+                openModal(item);
+            }
+        }
+
+        function flipAllCards() {
+            activeSpreadData.forEach((item, index) => {
+                const wrapper = document.getElementById(`card-wrap-${index}`);
+                if (wrapper && !item.isRevealed) {
+                    item.isRevealed = true;
+                    setTimeout(() => {
+                        wrapper.classList.add("flipped");
+                    }, index * 100);
+                }
+            });
+        }
+
+        function openModal(item) {
+            const modal = document.getElementById("modalOverlay");
+            const content = document.getElementById("modalContent");
+            const orientLabel = item.isReversed ? "Reversed" : "Upright";
+            const fullMeaning = item.isReversed ? item.reversed : item.upright;
+
+            content.innerHTML = `
+                <div class="modal-title">${item.name}</div>
+                <div class="modal-subtitle">${item.positionLabel} — ${orientLabel}</div>
+                <div class="modal-body">
+                    <p><strong>Primary Interpretation:</strong> ${fullMeaning}</p>
+                    <p><strong>Dalí Surrealist Perspective:</strong> In the surrealist tradition, this card signifies a distortion of everyday boundaries. The unconscious mind speaks in melting clocks, elevated visions, and symbolic archetypes. Consider what hidden desires or forgotten truths are surfacing right now.</p>
+                </div>
+            `;
+            modal.classList.add("active");
+        }
+
+        function closeModal() {
+            document.getElementById("modalOverlay").classList.remove("active");
+        }
+
+        window.onload = function() {
+            dealSpread();
+        };
     </script>
 </body>
 </html>
