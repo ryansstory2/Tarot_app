@@ -1,7 +1,5 @@
 #!/bin/bash
-
 echo "[+] Updating Tarot app with Celtic Cross, reversals, animations, and summary..."
-
 cat << 'HTML' > assets/index.html
 <!DOCTYPE html>
 <html lang="en">
