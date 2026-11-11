@@ -49,4 +49,5 @@ jobs:
       with:
         name: package
         path: bin/*.apk
-        
+        buildozer init
+
